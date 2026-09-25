@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VEloop Rewards — GPT Industry Research & Product Prototype</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+              accent: '#4f46e5',
+              navy: '#0f172a',
+              slate: '#1e293b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .nav-link.active {
+      background-color: #ede9fe;
+      color: #6d28d9;
+      font-weight: 700;
+    }
+    .nav-link.active i {
+      color: #7c3aed;
+    }
+    .res-nav-link.active {
+      border-bottom: 3px solid #7c3aed;
+      color: #7c3aed;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+  <!-- GLOBAL TOP NAVIGATION BAR -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 lg:px-8 py-3.5 shadow-xs">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      
+      <!-- Brand & Mode Title -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-700 via-brand-600 to-indigo-500 flex items-center justify-center text-white font-extrabold text-xl shadow-md shadow-brand-500/20">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg tracking-tight text-slate-900">VEloop Rewards</span>
+            <span class="text-[10px] font-bold bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full border border-brand-200 hidden sm:inline-block">Internship Submission</span>
+          </div>
+          <p class="text-xs text-slate-500 font-medium hidden md:block">"Turn Your Time Into Rewards." • GPT Research & Product Prototype</p>
+        </div>
+      </div>
+
+      <!-- Mode Selector Switcher -->
+      <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+        <button id="btn-mode-demo" onclick="setAppMode('demo')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-brand-700 shadow-xs flex items-center gap-1.5">
+          <i class="fa-solid fa-rocket"></i> <span>Product Demo</span>
+        </button>
+        <button id="btn-mode-research" onclick="setAppMode('research')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-brand-700 transition-all flex items-center gap-1.5">
+          <i class="fa-solid fa-book-open"></i> <span>Research Portal</span>
+        </button>
+      </div>
+
+      <!-- Quick Action Right Pill (Demo Mode Balance) -->
+      <div id="top-demo-balance-pill" class="hidden sm:flex items-center gap-2 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full">
+        <div class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">
+          <i class="fa-solid fa-coins"></i>
+        </div>
+        <span class="text-xs font-extrabold text-slate-900"><span id="top-vlp-val">2,450</span> VLP</span>
+        <button onclick="openWithdrawModal()" class="ml-1 bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+          Cashout
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================================================================= -->
+  <!-- MAIN CONTAINER 1: PRODUCT DEMO MODE (DEFAULT VIEW) -->
+  <!-- ================================================================= -->
+  <div id="mode-demo-container" class="flex-1 flex min-h-screen w-full relative">
+
+    <!-- DESKTOP SIDEBAR -->
+    <aside class="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 fixed top-[65px] bottom-0 left-0 z-30 shadow-sm">
+      <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
+        <div class="px-3 pb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Product Menu</div>
+        
+        <button onclick="switchDemoTab('dashboard')" id="nav-dashboard" class="nav-link active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-brand-700 hover:bg-slate-100 transition-all">
+          <i class="fa-solid fa-house w-5 text-center text-slate-400"></i>
+          <span>Dashboard</span>
+        </button>
+
+        <button onclick="switchDemoTab('earn')" id="nav-earn" class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-brand-700 hover:bg-slate-100 transition-all">
+          <i class="fa-solid fa-coins w-5 text-center text-slate-400"></i>
+          <span>Earn Center</span>
+          <span class="ml-auto text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">HOT</span>
+        </button>
+
+        <button onclick="switchDemoTab('surveys')" id="nav-surveys" class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-brand-700 hover:bg-slate-100 transition-all">
+          <i class="fa-solid fa-clipboard-list w-5 text-center text-slate-400"></i>
+          <span>Surveys</span>
+        </button>
+
+        <button onclick="switchDemoTab('games')" id="nav-games" class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-brand-700 hover:bg-slate-100 transition-all">
+          <i class="fa-solid fa-gamepad w-5 text-center text-slate-400"></i>
+          <span>Games</span>
+        </button>
+
+        <button onclick="switchDemoTab('offerwalls')" id="nav-offerwalls" class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-brand-700 hover:bg-slate-100 transition-all">
+          <i class="fa-solid fa-layer-group w-5 text-center text-slate-400"></i>
+          <span>Offerwalls</span>
+          <span class="ml-auto text-[10px] font-bold bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full">10</span>
+        </button>
+
+        <button onclick="switchDemoTab('cashback')" id="nav-cashback" class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-brand-700 hover:bg-slate-100 transition-all">
+          <i class="fa-solid fa-bag-shopping w-5 text-center text-slate-400"></i>
+          <span>Cashback Shopping</span>
+        </button>
+
+        <div class="pt-4 px-3 pb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Wallet & Social</div>
+
+        <button onclick="switchDemoTab('referrals')" id="nav-referrals" class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-brand-700 hover:bg-slate-100 transition-all">
+          <i class="fa-solid fa-users w-5 text-center text-slate-400"></i>
+          <span>Referrals</span>
+          <span class="ml-auto text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">10%</span>
+        </button>
+
+        <button onclick="switchDemoTab('leaderboard')" id="nav-leaderboard" class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-brand-700 hover:bg-slate-100 transition-all">
+          <i class="fa-solid fa-trophy w-5 text-center text-slate-400"></i>
+          <span>Leaderboard</span>
+        </button>
+
+        <button onclick="switchDemoTab('achievements')" id="nav-achievements" class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-brand-700 hover:bg-slate-100 transition-all">
+          <i class="fa-solid fa-medal w-5 text-center text-slate-400"></i>
+          <span>Achievements</span>
+        </button>
+
+        <button onclick="switchDemoTab('wallet')" id="nav-wallet" class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-brand-700 hover:bg-slate-100 transition-all">
+          <i class="fa-solid fa-wallet w-5 text-center text-slate-400"></i>
+          <span>Wallet</span>
+        </button>
+
+        <button onclick="switchDemoTab('withdraw')" id="nav-withdraw" class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-brand-700 hover:bg-slate-100 transition-all">
+          <i class="fa-solid fa-arrow-up-right-from-square w-5 text-center text-slate-400"></i>
+          <span>Withdraw</span>
+        </button>
+
+        <button onclick="switchDemoTab('settings')" id="nav-settings" class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-brand-700 hover:bg-slate-100 transition-all">
+          <i class="fa-solid fa-gear w-5 text-center text-slate-400"></i>
+          <span>Settings</span>
+        </button>
+
+        <div class="pt-4 border-t border-slate-200 mt-4 px-2">
+          <button onclick="setAppMode('research')" class="w-full bg-brand-50 border border-brand-200 text-brand-700 rounded-xl py-2 px-3 text-xs font-extrabold flex items-center justify-center gap-2 hover:bg-brand-100 transition-all">
+            <i class="fa-solid fa-graduation-cap"></i> Open Research Portal
+          </button>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- RIGHT MAIN CONTENT (PRODUCT DEMO) -->
+    <div class="flex-1 md:ml-64 p-4 md:p-8 max-w-7xl mx-auto space-y-6 pb-20 md:pb-8">
+
+      <!-- DASHBOARD TAB -->
+      <div id="demo-tab-dashboard" class="demo-tab-view space-y-6">
+        <!-- Hero Banner -->
+        <div class="relative rounded-3xl bg-gradient-to-r from-brand-900 via-brand-800 to-indigo-900 p-6 md:p-8 text-white shadow-xl overflow-hidden">
+          <div class="relative z-10 space-y-3">
+            <span class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-brand-200 border border-white/10">
+              <i class="fa-solid fa-sparkles text-amber-300"></i> Experience VEloop Rewards Prototype
+            </span>
+            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Welcome back, Ayush! 👋</h2>
+            <p class="text-slate-300 text-sm max-w-2xl">Turn your free time into crypto, PayPal cash & gift cards. Complete quick surveys, play mobile games, or explore offerwalls to earn.</p>
+
+            <div class="pt-3 flex flex-wrap items-center gap-4">
+              <div class="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10 flex items-center gap-3">
+                <div class="text-left">
+                  <div class="text-xs text-brand-200 font-semibold flex items-center gap-1"><i class="fa-solid fa-fire text-amber-400"></i> 7-Day Streak</div>
+                  <div class="flex items-center gap-1 mt-1">
+                    <div class="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold text-[9px] flex items-center justify-center">M</div>
+                    <div class="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold text-[9px] flex items-center justify-center">T</div>
+                    <div class="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold text-[9px] flex items-center justify-center">W</div>
+                    <div class="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold text-[9px] flex items-center justify-center">T</div>
+                    <div class="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold text-[9px] flex items-center justify-center">F</div>
+                    <div id="streak-sat" class="w-5 h-5 rounded-full bg-white/20 text-slate-300 font-bold text-[9px] flex items-center justify-center">S</div>
+                    <div id="streak-sun" class="w-5 h-5 rounded-full bg-amber-400/30 text-amber-300 font-bold text-[9px] flex items-center justify-center">S</div>
+                  </div>
+                </div>
+              </div>
+
+              <button onclick="claimDailyCheckin()" id="btn-daily-checkin" class="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-extrabold px-5 py-3 rounded-2xl text-xs flex items-center gap-2 shadow-lg transition-all">
+                <i class="fa-solid fa-gift"></i> Claim Daily Check-in (+100 VLP)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 STAT CARDS -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+            <div class="text-xs font-semibold text-slate-500 mb-1">VLP Balance</div>
+            <div class="text-2xl font-extrabold text-slate-900" id="dash-vlp-balance">2,450 <span class="text-sm font-bold text-brand-600">VLP</span></div>
+            <div class="text-xs text-slate-400 mt-1">≈ $<span id="dash-usd-balance">2.45</span> USD</div>
+          </div>
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+            <div class="text-xs font-semibold text-slate-500 mb-1">Pending Rewards</div>
+            <div class="text-2xl font-extrabold text-slate-900">600 <span class="text-sm font-bold text-amber-600">VLP</span></div>
+            <div class="text-xs text-slate-400 mt-1">24h verification</div>
+          </div>
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+            <div class="text-xs font-semibold text-slate-500 mb-1">Monthly Earnings</div>
+            <div class="text-2xl font-extrabold text-slate-900">14,200 <span class="text-sm font-bold text-indigo-600">VLP</span></div>
+            <div class="text-xs text-emerald-600 font-bold mt-1">+18.5% this month</div>
+          </div>
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+            <div class="text-xs font-semibold text-slate-500 mb-1">Earner Level</div>
+            <div class="text-2xl font-extrabold text-slate-900">Level 5</div>
+            <div class="text-xs text-brand-600 font-bold mt-1">1,450 / 2,000 XP (72.5%)</div>
+          </div>
+        </div>
+
+        <!-- TODAY'S OPPORTUNITIES -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-extrabold text-slate-900">Today's Opportunities</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded">Paid Survey</span>
+                <h4 class="font-extrabold text-slate-900 text-base mt-2">Consumer Shopping Habits Survey</h4>
+                <p class="text-xs text-slate-500 mt-1 mb-4">10 min survey by CPX Research.</p>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-100 pt-3">
+                <span class="font-extrabold text-brand-600">+350 VLP</span>
+                <button onclick="startDemoTask('Consumer Shopping Survey', 350)" class="bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Start Survey</button>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">Mobile Game</span>
+                <h4 class="font-extrabold text-slate-900 text-base mt-2">Monopoly GO — Board Level 15</h4>
+                <p class="text-xs text-slate-500 mt-1 mb-4">Torox Gaming Offer.</p>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-100 pt-3">
+                <span class="font-extrabold text-indigo-600">+4,500 VLP</span>
+                <button onclick="startDemoTask('Monopoly GO Challenge', 4500)" class="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Play & Earn</button>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">Microtask</span>
+                <h4 class="font-extrabold text-slate-900 text-base mt-2">Join Telegram Announcement Channel</h4>
+                <p class="text-xs text-slate-500 mt-1 mb-4">1 min instant claim task.</p>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-100 pt-3">
+                <span class="font-extrabold text-emerald-600">+150 VLP</span>
+                <button onclick="startDemoTask('Telegram Task', 150)" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Complete Task</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EARN TAB -->
+      <div id="demo-tab-earn" class="demo-tab-view hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200">
+          <h2 class="text-xl font-extrabold text-slate-900">Earn Center</h2>
+          <p class="text-xs text-slate-500">Select any earning method to begin earning VLP rewards.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div onclick="switchDemoTab('surveys')" class="bg-white p-6 rounded-2xl border border-slate-200 hover:border-brand-500 cursor-pointer">
+            <i class="fa-solid fa-clipboard-list text-2xl text-brand-600 mb-2"></i>
+            <h3 class="font-bold text-slate-900">Surveys</h3>
+            <p class="text-xs text-slate-500">Market research surveys with instant credit.</p>
+          </div>
+          <div onclick="switchDemoTab('games')" class="bg-white p-6 rounded-2xl border border-slate-200 hover:border-indigo-500 cursor-pointer">
+            <i class="fa-solid fa-gamepad text-2xl text-indigo-600 mb-2"></i>
+            <h3 class="font-bold text-slate-900">Rewarded Gaming</h3>
+            <p class="text-xs text-slate-500">Reach game milestones for high VLP payouts.</p>
+          </div>
+          <div onclick="switchDemoTab('offerwalls')" class="bg-white p-6 rounded-2xl border border-slate-200 hover:border-amber-500 cursor-pointer">
+            <i class="fa-solid fa-layer-group text-2xl text-amber-600 mb-2"></i>
+            <h3 class="font-bold text-slate-900">Offerwall Networks</h3>
+            <p class="text-xs text-slate-500">10 partner networks (CPX, Torox, BitLabs, etc.)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SURVEYS TAB -->
+      <div id="demo-tab-surveys" class="demo-tab-view hidden space-y-4">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200">
+          <h2 class="text-xl font-extrabold text-slate-900">Paid Surveys Router</h2>
+          <p class="text-xs text-slate-500">Real-time surveys powered by CPX Research & BitLabs.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 flex justify-between items-center">
+            <div>
+              <span class="text-[10px] font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded">CPX Research</span>
+              <h4 class="font-bold text-slate-900 mt-1">Tech & Gadgets Buying Habits (15 min)</h4>
+            </div>
+            <button onclick="startDemoTask('CPX Tech Survey', 450)" class="bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-xl">+450 VLP</button>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 flex justify-between items-center">
+            <div>
+              <span class="text-[10px] font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded">BitLabs</span>
+              <h4 class="font-bold text-slate-900 mt-1">Streaming Video Subscriptions (8 min)</h4>
+            </div>
+            <button onclick="startDemoTask('BitLabs Survey', 280)" class="bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-xl">+280 VLP</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GAMES TAB -->
+      <div id="demo-tab-games" class="demo-tab-view hidden space-y-4">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200">
+          <h2 class="text-xl font-extrabold text-slate-900">Rewarded Mobile Gaming</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200">
+            <h4 class="font-extrabold text-slate-900">Chief Almighty: First Village</h4>
+            <p class="text-xs text-slate-500 my-2">Reach Town Hall Level 15 & 20.</p>
+            <button onclick="startDemoTask('Chief Almighty Game', 12000)" class="w-full bg-indigo-600 text-white font-bold py-2 rounded-xl text-xs">Play & Earn Up to +12,000 VLP</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OFFERWALLS TAB -->
+      <div id="demo-tab-offerwalls" class="demo-tab-view hidden space-y-4">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 flex justify-between items-center">
+          <div>
+            <h2 class="text-xl font-extrabold text-slate-900">Offerwall Partners</h2>
+            <p class="text-xs text-slate-500">10 integrated offerwall provider networks.</p>
+          </div>
+          <span class="text-xs font-bold text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200">DEMO INTEGRATION</span>
+        </div>
+        <div id="demo-offerwalls-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- CASHBACK TAB -->
+      <div id="demo-tab-cashback" class="demo-tab-view hidden space-y-4">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200">
+          <h2 class="text-xl font-extrabold text-slate-900">Cashback Shopping Hub</h2>
+          <p class="text-xs text-slate-500">Earn VLP cashback on top online retailer purchases.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 text-center space-y-2">
+            <i class="fa-brands fa-amazon text-3xl text-amber-500"></i>
+            <h4 class="font-extrabold text-slate-900 text-sm">Amazon Cashback</h4>
+            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">Up to 8% VLP Back</span>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 text-center space-y-2">
+            <i class="fa-solid fa-[#10b981] fa-store text-3xl text-emerald-500"></i>
+            <h4 class="font-extrabold text-slate-900 text-sm">Flipkart Cashback</h4>
+            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">Up to 6% VLP Back</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- REFERRALS TAB -->
+      <div id="demo-tab-referrals" class="demo-tab-view hidden space-y-4">
+        <div class="bg-gradient-to-r from-emerald-800 to-teal-900 text-white p-6 rounded-3xl space-y-2">
+          <h2 class="text-xl font-extrabold">10% Lifetime Passive Commissions</h2>
+          <p class="text-xs text-emerald-100">Invite friends using your unique referral code and earn 10% of their earnings forever.</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 space-y-3">
+          <label class="block font-bold text-xs text-slate-700">Your Unique Referral Link</label>
+          <div class="flex gap-2">
+            <input type="text" id="demo-ref-input" readonly value="https://veloop.app/ref/VELOOP-AYUSH-2026" class="flex-1 bg-slate-100 border border-slate-200 px-3 py-2 rounded-xl text-xs font-mono">
+            <button onclick="copyReferralLink()" class="bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-xl">Copy Link</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEADERBOARD TAB -->
+      <div id="demo-tab-leaderboard" class="demo-tab-view hidden space-y-4">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 flex justify-between items-center">
+          <div>
+            <h2 class="text-xl font-extrabold text-slate-900">Weekly Earner Competition</h2>
+            <p class="text-xs text-slate-500">$100 USD Prize Pool reset every Sunday midnight.</p>
+          </div>
+          <span class="text-xs font-extrabold text-amber-800 bg-amber-100 px-3 py-1 rounded-full">$100 Prize Pool</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-50 border-b border-slate-200 font-bold text-slate-500">
+              <tr><th class="p-3">Rank</th><th class="p-3">Earner</th><th class="p-3">Level</th><th class="p-3">Weekly VLP</th><th class="p-3">Prize</th></tr>
+            </thead>
+            <tbody id="demo-leaderboard-body" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ACHIEVEMENTS TAB -->
+      <div id="demo-tab-achievements" class="demo-tab-view hidden space-y-4">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200">
+          <h2 class="text-xl font-extrabold text-slate-900">Earner Badges & Achievements</h2>
+        </div>
+        <div id="demo-achievements-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- WALLET & WITHDRAW TABS -->
+      <div id="demo-tab-wallet" class="demo-tab-view hidden space-y-4">
+        <div class="bg-slate-900 text-white p-6 rounded-3xl flex justify-between items-center">
+          <div>
+            <div class="text-xs font-bold text-brand-300">Total VLP Balance</div>
+            <div class="text-3xl font-extrabold mt-1"><span id="demo-wallet-vlp">2,450</span> VLP</div>
+            <div class="text-xs text-slate-400 mt-0.5">≈ $<span id="demo-wallet-usd">2.45</span> USD</div>
+          </div>
+          <button onclick="openWithdrawModal()" class="bg-amber-400 text-slate-950 font-extrabold px-5 py-3 rounded-2xl text-xs">Request Cashout</button>
+        </div>
+      </div>
+
+      <div id="demo-tab-withdraw" class="demo-tab-view hidden space-y-4">
+        <div class="bg-white p-8 rounded-2xl border border-slate-200 text-center space-y-3 max-w-lg mx-auto">
+          <i class="fa-solid fa-arrow-up-right-from-square text-3xl text-brand-600"></i>
+          <h2 class="text-xl font-extrabold text-slate-900">Instant Redemption Hub</h2>
+          <p class="text-xs text-slate-500">Select crypto, UPI, PayPal, or Amazon gift cards to withdraw.</p>
+          <button onclick="openWithdrawModal()" class="bg-brand-600 text-white font-extrabold px-6 py-2.5 rounded-xl text-xs">Launch Cashout Form</button>
+        </div>
+      </div>
+
+      <!-- SETTINGS TAB -->
+      <div id="demo-tab-settings" class="demo-tab-view hidden space-y-4">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 max-w-xl space-y-3">
+          <h2 class="text-xl font-extrabold text-slate-900">Account Preferences</h2>
+          <div class="flex items-center justify-between text-xs py-2 border-b">
+            <span>Payout Notifications</span>
+            <input type="checkbox" checked class="w-4 h-4 text-brand-600">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- MAIN CONTAINER 2: RESEARCH PORTAL MODE (FULL ASSIGNMENT SECTIONS) -->
+  <!-- ================================================================= -->
+  <div id="mode-research-container" class="hidden flex-1 flex flex-col w-full max-w-7xl mx-auto p-4 lg:p-8 space-y-8">
+
+    <!-- RESEARCH SUB-NAVIGATION BAR -->
+    <div class="sticky top-[65px] z-30 bg-white/90 backdrop-blur-md border border-slate-200 rounded-2xl p-2 flex items-center gap-2 overflow-x-auto custom-scrollbar shadow-xs">
+      <button onclick="switchResTab('res-overview')" id="resnav-res-overview" class="res-nav-link active px-3.5 py-2 text-xs font-bold whitespace-nowrap text-slate-600">1. Overview</button>
+      <button onclick="switchResTab('res-platforms')" id="resnav-res-platforms" class="res-nav-link px-3.5 py-2 text-xs font-bold whitespace-nowrap text-slate-600">2. Platform Research (8)</button>
+      <button onclick="switchResTab('res-earning')" id="resnav-res-earning" class="res-nav-link px-3.5 py-2 text-xs font-bold whitespace-nowrap text-slate-600">3. Earning Methods</button>
+      <button onclick="switchResTab('res-matrix')" id="resnav-res-matrix" class="res-nav-link px-3.5 py-2 text-xs font-bold whitespace-nowrap text-slate-600">4. Feature Matrix</button>
+      <button onclick="switchResTab('res-networks')" id="resnav-res-networks" class="res-nav-link px-3.5 py-2 text-xs font-bold whitespace-nowrap text-slate-600">5. Offerwall Networks</button>
+      <button onclick="switchResTab('res-monetization')" id="resnav-res-monetization" class="res-nav-link px-3.5 py-2 text-xs font-bold whitespace-nowrap text-slate-600">6. Monetization</button>
+      <button onclick="switchResTab('res-ux')" id="resnav-res-ux" class="res-nav-link px-3.5 py-2 text-xs font-bold whitespace-nowrap text-slate-600">7. UX Audit</button>
+      <button onclick="switchResTab('res-ideas')" id="resnav-res-ideas" class="res-nav-link px-3.5 py-2 text-xs font-bold whitespace-nowrap text-slate-600">8. VEloop Unique Ideas</button>
+      <button onclick="switchResTab('res-roadmap')" id="resnav-res-roadmap" class="res-nav-link px-3.5 py-2 text-xs font-bold whitespace-nowrap text-slate-600">9. Product Roadmap</button>
+      <button onclick="switchResTab('res-qa')" id="resnav-res-qa" class="res-nav-link px-3.5 py-2 text-xs font-bold whitespace-nowrap text-slate-600">10. Interview Q&A (20)</button>
+    </div>
+
+    <!-- SECTION 1: OVERVIEW -->
+    <div id="res-overview" class="res-tab-view space-y-6">
+      <div class="bg-gradient-to-r from-brand-900 to-indigo-950 text-white rounded-3xl p-6 lg:p-8 space-y-3 shadow-xl">
+        <span class="bg-brand-500/20 text-brand-300 border border-brand-400/30 px-3 py-1 rounded-full text-xs font-bold">Executive Internship Research Report</span>
+        <h2 class="text-2xl lg:text-3xl font-extrabold">VEloop Rewards — Competitor GPT & Rewards Research</h2>
+        <p class="text-xs lg:text-sm text-slate-300 leading-relaxed max-w-3xl">Comprehensive competitive benchmark analyzing 8 leading Get-Paid-To (GPT) platforms, 11 offerwall partner networks, monetization models, fraud mitigation, and 12 strategic VEloop product recommendations.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <div class="text-xs font-bold text-brand-600 uppercase mb-1">8 Platforms Analyzed</div>
+          <div class="text-sm font-extrabold text-slate-900">JumpTask, Freecash, Swagbucks, TimeBucks, EarnApp, Pawns, Idle-Empire, Cointiply</div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <div class="text-xs font-bold text-indigo-600 uppercase mb-1">11 Offerwalls Audited</div>
+          <div class="text-sm font-extrabold text-slate-900">CPX Research, Torox, AdGate, BitLabs, Lootably, RevU, AyeT, AdGem, TimeWall, Monlix, OfferToro</div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <div class="text-xs font-bold text-emerald-600 uppercase mb-1">12 VEloop Innovations</div>
+          <div class="text-sm font-extrabold text-slate-900">Smart Task Matching, Transparent Ledger, Reliability Scores, Missing Reward Center</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: PLATFORM RESEARCH (8 REQUIRED PLATFORMS) -->
+    <div id="res-platforms" class="res-tab-view hidden space-y-6">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200">
+        <h2 class="text-xl font-extrabold text-slate-900">Comprehensive 8-Platform Competitor Breakdown</h2>
+        <p class="text-xs text-slate-500 mt-1">Detailed audit of platform mechanics, earning verticals, payout terms, strengths, and verified references.</p>
+      </div>
+      <div id="platforms-container-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </div>
+
+    <!-- SECTION 3: EARNING METHODS -->
+    <div id="res-earning" class="res-tab-view hidden space-y-6">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200">
+        <h2 class="text-xl font-extrabold text-slate-900">10 Earning Methods Breakdown & VEloop Integration</h2>
+      </div>
+      <div id="earning-methods-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+
+    <!-- SECTION 4: FEATURE MATRIX -->
+    <div id="res-matrix" class="res-tab-view hidden space-y-6">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-900">15-Feature Competitive Comparison Matrix</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Feature availability audit across all 8 researched platforms</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span class="w-3 h-3 bg-emerald-500 rounded-full inline-block"></span> <span class="font-bold text-slate-700">Supported</span>
+          <span class="w-3 h-3 bg-amber-400 rounded-full inline-block ml-2"></span> <span class="font-bold text-slate-700">Partial</span>
+          <span class="w-3 h-3 bg-slate-300 rounded-full inline-block ml-2"></span> <span class="font-bold text-slate-700">Not Supported</span>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
+        <table class="w-full text-xs text-left">
+          <thead class="bg-slate-50 border-b border-slate-200 font-extrabold text-slate-700">
+            <tr>
+              <th class="p-3">Feature</th>
+              <th class="p-3">JumpTask</th>
+              <th class="p-3">Freecash</th>
+              <th class="p-3">Swagbucks</th>
+              <th class="p-3">TimeBucks</th>
+              <th class="p-3">EarnApp</th>
+              <th class="p-3">Pawns.app</th>
+              <th class="p-3">Idle-Empire</th>
+              <th class="p-3">Cointiply</th>
+            </tr>
+          </thead>
+          <tbody id="matrix-table-body" class="divide-y divide-slate-100 font-medium"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SECTION 5: OFFERWALL NETWORKS -->
+    <div id="res-networks" class="res-tab-view hidden space-y-6">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 flex justify-between items-center">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-900">11 Offerwall & Advertising Partner Networks</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Audit of major third-party offer routers and monetization partners.</p>
+        </div>
+        <span class="text-xs font-bold text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200">DEMO / RESEARCH</span>
+      </div>
+      <div id="networks-research-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- SECTION 6: MONETIZATION -->
+    <div id="res-monetization" class="res-tab-view hidden space-y-6">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 space-y-3">
+        <h2 class="text-xl font-extrabold text-slate-900">GPT Platform Business Model & Revenue Flow</h2>
+        <p class="text-xs text-slate-500 leading-relaxed">How GPT platforms generate margin through affiliate arbitrage (CPA, CPI, CPE, CPR). Platforms retain 20% – 40% margin on completed user offer postbacks.</p>
+
+        <!-- Visual Flow Diagram -->
+        <div class="p-6 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-4 text-center my-4">
+          <div class="font-extrabold text-brand-300 text-xs uppercase tracking-wider">Revenue Distribution Architecture</div>
+          <div class="flex flex-wrap items-center justify-center gap-2 text-xs font-extrabold">
+            <span class="bg-slate-800 border border-slate-700 px-3 py-2 rounded-xl text-slate-200">Advertiser / Brand</span>
+            <i class="fa-solid fa-arrow-right text-brand-400"></i>
+            <span class="bg-slate-800 border border-slate-700 px-3 py-2 rounded-xl text-slate-200">Offerwall Router</span>
+            <i class="fa-solid fa-arrow-right text-brand-400"></i>
+            <span class="bg-brand-600 px-3 py-2 rounded-xl text-white">VEloop Platform</span>
+            <i class="fa-solid fa-arrow-right text-brand-400"></i>
+            <span class="bg-emerald-600 px-3 py-2 rounded-xl text-white">User Reward (70%)</span>
+            <span class="text-slate-400">+</span>
+            <span class="bg-indigo-600 px-3 py-2 rounded-xl text-white">Platform Margin (30%)</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 text-xs">
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <div class="font-bold text-slate-900 mb-1">1. Advertiser Payout (Gross)</div>
+            <div class="text-slate-500">$10.00 USD per game milestone completed (CPE) via postback webhook.</div>
+          </div>
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <div class="font-bold text-emerald-700 mb-1">2. User Reward Credit (70%)</div>
+            <div class="text-slate-500">$7.00 USD (7,000 VLP) credited directly to earner wallet.</div>
+          </div>
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <div class="font-bold text-brand-700 mb-1">3. Platform Gross Profit (30%)</div>
+            <div class="text-slate-500">$3.00 USD retained to cover operations, referral payouts & reserves.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 7: UX AUDIT -->
+    <div id="res-ux" class="res-tab-view hidden space-y-6">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 space-y-4">
+        <h2 class="text-xl font-extrabold text-slate-900">User Experience (UX/UI) Audit & Journey</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 text-center text-xs font-extrabold">
+          <div class="p-3 bg-brand-50 border border-brand-200 rounded-xl text-brand-700">1. Register</div>
+          <div class="p-3 bg-brand-50 border border-brand-200 rounded-xl text-brand-700">2. Profile</div>
+          <div class="p-3 bg-brand-50 border border-brand-200 rounded-xl text-brand-700">3. Dashboard</div>
+          <div class="p-3 bg-brand-50 border border-brand-200 rounded-xl text-brand-700">4. Task Choice</div>
+          <div class="p-3 bg-brand-50 border border-brand-200 rounded-xl text-brand-700">5. Complete</div>
+          <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700">6. Postback</div>
+          <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700">7. Wallet Credit</div>
+          <div class="p-3 bg-emerald-600 text-white rounded-xl">8. Cashout</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 8: VELOOP UNIQUE IDEAS -->
+    <div id="res-ideas" class="res-tab-view hidden space-y-6">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200">
+        <h2 class="text-xl font-extrabold text-slate-900">12 Strategic Product Innovations for VEloop</h2>
+      </div>
+      <div id="ideas-research-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- SECTION 9: ROADMAP -->
+    <div id="res-roadmap" class="res-tab-view hidden space-y-6">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 space-y-4">
+        <h2 class="text-xl font-extrabold text-slate-900">3-Stage Strategic Product Roadmap</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-2">
+            <span class="bg-brand-600 text-white font-extrabold px-2.5 py-1 rounded-md">Stage 1: MVP</span>
+            <h4 class="font-extrabold text-slate-900 text-sm mt-2">Core Foundation</h4>
+            <ul class="space-y-1 text-slate-600 list-disc list-inside">
+              <li>CPX Research & Torox integration</li>
+              <li>Low $0.50 crypto & UPI cashouts</li>
+              <li>7-Day Streak & Daily Check-in</li>
+              <li>Basic referral tracking (10%)</li>
+            </ul>
+          </div>
+          <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-2">
+            <span class="bg-indigo-600 text-white font-extrabold px-2.5 py-1 rounded-md">Stage 2: Growth</span>
+            <h4 class="font-extrabold text-slate-900 text-sm mt-2">Expansion & Retention</h4>
+            <ul class="space-y-1 text-slate-600 list-disc list-inside">
+              <li>10 Offerwall network integrations</li>
+              <li>Missing Reward Ticket Desk</li>
+              <li>Smart Task Matching engine</li>
+              <li>Weekly $100 Prize Leaderboards</li>
+            </ul>
+          </div>
+          <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-2">
+            <span class="bg-emerald-600 text-white font-extrabold px-2.5 py-1 rounded-md">Stage 3: Scale</span>
+            <h4 class="font-extrabold text-slate-900 text-sm mt-2">Ecosystem Dominance</h4>
+            <ul class="space-y-1 text-slate-600 list-disc list-inside">
+              <li>Native Mobile Apps (iOS/Android)</li>
+              <li>Background bandwidth sharing SDK</li>
+              <li>Instant automated UPI/Crypto engine</li>
+              <li>B2B Advertiser self-serve dashboard</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 10: INTERVIEW Q&A (20 CARDS) -->
+    <div id="res-qa" class="res-tab-view hidden space-y-6">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 flex justify-between items-center">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-900">20 Presentation & Interview Preparation Cards</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Core GPT platform operational & technical Q&A cards.</p>
+        </div>
+        <span class="text-xs font-bold text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200">20 Q&A Cards</span>
+      </div>
+      <div id="qa-cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+
+  </div>
+
+  <!-- MODAL 1: DEMO TASK -->
+  <div id="task-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-100">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 id="modal-task-title" class="font-extrabold text-slate-900 text-base">Demo Task Launch</h3>
+        <button onclick="closeModal('task-modal')" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="text-xs text-slate-600 leading-relaxed">
+        Simulating task completion. Click below to credit <span id="modal-task-vlp" class="font-bold text-brand-600">+0 VLP</span> to your wallet balance.
+      </p>
+      <div class="pt-2 flex gap-3">
+        <button onclick="closeModal('task-modal')" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Cancel</button>
+        <button onclick="completeDemoTask()" class="flex-1 py-2.5 rounded-xl bg-brand-600 text-white text-xs font-bold shadow-md">Complete & Claim VLP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: WITHDRAWAL MODAL -->
+  <div id="withdraw-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-100">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="font-extrabold text-slate-900 text-base">Instant Redemption Request</h3>
+        <button onclick="closeModal('withdraw-modal')" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Select Method</label>
+          <select id="withdraw-method-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-semibold">
+            <option value="Crypto">Crypto — Litecoin / Solana (Min $0.50)</option>
+            <option value="UPI">UPI Instant Bank Transfer (Min $1.00)</option>
+            <option value="PayPal">PayPal Cash (Min $5.00)</option>
+            <option value="Amazon">Amazon Gift Card (Min $5.00)</option>
+            <option value="Steam">Steam Wallet (Min $10.00)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Destination Address / Email / UPI ID</label>
+          <input type="text" id="withdraw-destination-input" placeholder="e.g. ayush@upi or wallet address" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-medium">
+        </div>
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 font-medium">
+          Available balance: <span class="font-bold text-slate-900"><span id="modal-available-vlp">2,450</span> VLP</span> (≈ $<span id="modal-available-usd">2.45</span> USD)
+        </div>
+      </div>
+      <div class="pt-2 flex gap-3">
+        <button onclick="closeModal('withdraw-modal')" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Cancel</button>
+        <button onclick="submitWithdrawal()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-md">Confirm Cashout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT DATA & APP ENGINE -->
+  <script>
+    let appState = {
+      mode: 'demo', // 'demo' or 'research'
+      vlpBalance: 2450,
+      claimedStreakToday: false,
+      activeDemoTask: { title: '', vlp: 0 }
+    };
+
+    // Platform Research Data (8 Platforms)
+    const platformData = [
+      { name: "JumpTask", desc: "Web3 microtasking platform with native JMPT token payouts & passive staking.", earning: "Staking, Microtasks, Surveys, Bandwidth", features: "Binance Smart Chain, JMPT Token, Staking APY", monetization: "Token appreciation & offerwall commission margin", ux: "Modern Web3 dashboard with Metamask integration", ref: "jumptask.io" },
+      { name: "Freecash", desc: "Top-tier gaming & offerwall GPT platform with instant crypto & PayPal cashouts.", earning: "CPA Gaming, Surveys, Offerwalls, Daily Ladder", features: "Daily Bonus Ladder, Live Payout Stream, 24/7 Support", monetization: "30-40% affiliate margin on offerwall postbacks", ux: "Gamified dark/light theme UI with instant chat", ref: "freecash.com" },
+      { name: "Swagbucks", desc: "Pioneer market research & cashback shopping platform operated by Prodege.", earning: "Surveys, Shopping Cashback, Magic Receipts, Search", features: "SB Points System, Swag Codes, Browser Extension", monetization: "Direct corporate research contracts & retail affiliate commission", ux: "Classic portal structure with deep retail search", ref: "swagbucks.com" },
+      { name: "TimeBucks", desc: "Global microtasking platform featuring social media tasks & survey routers.", earning: "Social Clicks, Video Ads, Surveys, Slideshows", features: "Daily $100 Sweepstakes, 5-tier referral tree", monetization: "Ad network arbitrage & social engagement campaigns", ux: "Dense task listings with strict geographical filtering", ref: "timebucks.com" },
+      { name: "EarnApp", desc: "Passive income utility application owned by Bright Data for bandwidth sharing.", earning: "Unused Internet Bandwidth Sharing, Referrals", features: "Automated PayPal/Amazon auto-cashout, Multi-device", monetization: "B2B proxy network IP leasing & web data collection", ux: "Minimalist background system tray widget", ref: "earnapp.com" },
+      { name: "Pawns.app", desc: "Dual passive bandwidth sharing & survey router app operated by IPRoyal.", earning: "Bandwidth Sharing, Surveys, Daily Quests", features: "Low $5 payout minimum, Global proxy coverage", monetization: "Corporate IP routing & market research polling", ux: "Clean mobile-first application dashboard", ref: "pawns.app" },
+      { name: "Idle-Empire", desc: "Gaming-focused reward platform serving esports skins & digital gift cards.", earning: "Offerwalls, Steam Tasks, Video Watching, Surveys", features: "CS:GO/Dota 2 Skins, Steam Direct Top-up", monetization: "Offerwall arbitrage & gaming gift card margins", ux: "Gamer-centric dark aesthetic UI", ref: "idle-empire.com" },
+      { name: "Cointiply", desc: "Gamified bitcoin faucet & offerwall portal with interest-bearing balances.", earning: "Bitcoin Faucet, Cointivity Mining Game, Surveys", features: "5% Interest on 35k+ coin balances, Multipliers", monetization: "Crypto ad network banners & offerwall arbitrage", ux: "Rich gamified sci-fi dashboard theme", ref: "cointiply.com" }
+    ];
+
+    // Earning Methods Data (10 Verticals)
+    const earningMethodsData = [
+      { title: "Paid Surveys", desc: "Market research polling via CPX & BitLabs", flow: "Demographic Match -> Polling -> Postback -> Credit", rev: "30% platform margin", vloop: "Smart Demographic Pre-filtering to reduce disqualifications" },
+      { title: "Offerwalls", desc: "Third-party task & app discovery routers", flow: "User Click -> Provider Wall -> Complete -> Webhook", rev: "20-40% revenue split", vloop: "Unified Earnings Timeline across all 10 offerwalls" },
+      { title: "App Downloads", desc: "Mobile app installation & registration offers", flow: "Install -> Open App -> 2 Min Use -> Postback", rev: "CPI Payout ($0.50 - $3.00)", vloop: "App Install Verification Assistant" },
+      { title: "Rewarded Gaming", desc: "Multi-stage game milestone challenges", flow: "Install Game -> Reach Level 15 -> Stage Credit", rev: "CPE Payout ($5.00 - $50.00)", vloop: "Multi-stage Progress Bar with Stage Payouts" },
+      { title: "Watching Ads", desc: "Short video advertisement streaming", flow: "Play Video -> 30s View -> Credit 5 VLP", rev: "CPM Ad Revenue", vloop: "Playlist Mode with Auto-advance" },
+      { title: "Micro Tasks", desc: "Social follows, clicks & short signups", flow: "Click Link -> Perform Action -> Submit Proof", rev: "Fixed Campaign Fee", vloop: "Instant 1-Click Verification System" },
+      { title: "Referrals", desc: "Tiered affiliate invite commissions", flow: "Share Link -> Friend Registers -> 10% Cut", rev: "User Retention Leverage", vloop: "10% Lifetime Commission + $1.00 Staged Bonus" },
+      { title: "Daily Rewards", desc: "Streak check-in rewards & daily quests", flow: "Daily Login -> Click Claim -> Streak ++", rev: "DAU Retention Engine", vloop: "Streak Protection Shield for active earners" },
+      { title: "Cashback Shopping", desc: "Affiliate e-commerce purchase rebates", flow: "Click Retailer -> Purchase -> Cashback Credit", rev: "2-10% Affiliate Commission", vloop: "Direct VLP Cashback Conversion" },
+      { title: "Bandwidth Sharing", desc: "Passive background internet sharing", flow: "Install Utility -> Share IP -> Earn Hourly", rev: "B2B Proxy Leasing Margin", vloop: "Integrated VEloop Bandwidth Passive Utility" }
+    ];
+
+    // Feature Matrix Data (15 Features x 8 Platforms)
+    const matrixRows = [
+      { feature: "Daily Check-in", jt: "Partial", fc: "Yes", sb: "Yes", tb: "Yes", ea: "No", pa: "Yes", ie: "Yes", ct: "Yes" },
+      { feature: "Streak Rewards", jt: "No", fc: "Yes", sb: "Yes", tb: "No", ea: "No", pa: "Yes", ie: "No", ct: "Yes" },
+      { feature: "Leaderboards", jt: "Yes", fc: "Yes", sb: "No", tb: "Yes", ea: "No", pa: "No", ie: "Yes", ct: "Yes" },
+      { feature: "Lucky Spin / Faucet", jt: "No", fc: "Yes", sb: "No", tb: "Yes", ea: "No", pa: "No", ie: "No", ct: "Yes" },
+      { feature: "Achievement Badges", jt: "Yes", fc: "Yes", sb: "Yes", tb: "No", ea: "No", pa: "Yes", ie: "Yes", ct: "Yes" },
+      { feature: "Referral System", jt: "Yes", fc: "Yes", sb: "Yes", tb: "Yes", ea: "Yes", pa: "Yes", ie: "Yes", ct: "Yes" },
+      { feature: "Cashback Shopping", jt: "No", fc: "No", sb: "Yes", tb: "No", ea: "No", pa: "No", ie: "No", ct: "No" },
+      { feature: "Offerwalls Integration", jt: "Yes", fc: "Yes", sb: "Yes", tb: "Yes", ea: "No", pa: "Yes", ie: "Yes", ct: "Yes" },
+      { feature: "Wallet & Instant Cashout", jt: "Yes", fc: "Yes", sb: "Partial", tb: "Partial", ea: "Yes", pa: "Yes", ie: "Yes", ct: "Yes" },
+      { feature: "Low $0.50 Min Cashout", jt: "Yes", fc: "Yes", sb: "No", tb: "No", ea: "No", pa: "No", ie: "No", ct: "No" },
+      { feature: "Level System", jt: "Yes", fc: "Yes", sb: "Yes", tb: "No", ea: "No", pa: "No", ie: "Yes", ct: "Yes" },
+      { feature: "Bonus Rewards", jt: "Yes", fc: "Yes", sb: "Yes", tb: "Yes", ea: "No", pa: "Yes", ie: "Yes", ct: "Yes" },
+      { feature: "Gamified UI", jt: "Yes", fc: "Yes", sb: "Partial", tb: "No", ea: "No", pa: "Yes", ie: "Partial", ct: "Yes" },
+      { feature: "Real-time Notifications", jt: "Yes", fc: "Yes", sb: "Yes", tb: "No", ea: "No", pa: "Yes", ie: "No", ct: "Yes" },
+      { feature: "Passive Bandwidth Earn", jt: "Yes", fc: "No", sb: "No", tb: "No", ea: "Yes", pa: "Yes", ie: "No", ct: "No" }
+    ];
+
+    // Offerwall Networks Data (11 Providers)
+    const offerwallNetworks = [
+      { name: "CPX Research", type: "Surveys Router", desc: "Top survey aggregator with high conversion rates & global inventory.", rec: "Primary Survey Router" },
+      { name: "Torox", type: "Rewarded Gaming", desc: "Premier mobile game CPA/CPE offerwall with multi-stage level rewards.", rec: "Primary Gaming Wall" },
+      { name: "AdGate Media", type: "Multi-stage CPA", desc: "Established offerwall featuring lockable content & app downloads.", rec: "Core Offerwall" },
+      { name: "Lootably", type: "Video & Offers", desc: "Engaging rewarded video stream player & app wall.", rec: "Video Rewards Engine" },
+      { name: "BitLabs", type: "High Payout Surveys", desc: "Premium survey router with in-depth demographic matching.", rec: "Secondary Survey Router" },
+      { name: "RevU", type: "Subscriptions & Free Trials", desc: "High-ticket financial & subscription trial offerwall.", rec: "High Payout Wall" },
+      { name: "AyeT Studios", type: "App Installs", desc: "Android/iOS app installation & engagement network.", rec: "Mobile App Wall" },
+      { name: "AdGem", type: "Mobile Gaming", desc: "Clean mobile gaming offerwall with automated postbacks.", rec: "Secondary Gaming Wall" },
+      { name: "TimeWall", type: "Microtasks & Clicks", desc: "Micro-job task router for quick click tasks.", rec: "Microtask Provider" },
+      { name: "Monlix", type: "Survey & Task Router", desc: "Modern ad network supporting web surveys & app testing.", rec: "General Offerwall" },
+      { name: "OfferToro", type: "Legacy CPA Wall", desc: "Global CPA offer network supporting worldwide traffic.", rec: "Supplemental Wall" }
+    ];
+
+    // VEloop Unique Ideas (12 Innovations)
+    const uniqueIdeas = [
+      { title: "Smart Task Matching", desc: "AI-driven demographic engine matching users to high-converting surveys." },
+      { title: "Transparent Reward Ledger", desc: "Immutable real-time postback audit log showing precise credit status." },
+      { title: "Reward Reliability Score", desc: "Community 5-star rating system on every offer indicating completion reliability." },
+      { title: "Personalized Daily Missions", desc: "Custom quest checklists tailored to user's favorite earning verticals." },
+      { title: "Streak Protection Shield", desc: "Buffer item allowing active earners to preserve streaks if a day is missed." },
+      { title: "Offer Quality Rating", desc: "Algorithmic flag highlighting low-friction high-payout offers." },
+      { title: "Missing Reward Ticket Desk", desc: "Automated support system for uploading screenshots of uncredited offers." },
+      { title: "Unified Earnings Timeline", desc: "Single real-time feed tracking earnings across all 10 offerwall partners." },
+      { title: "Achievement System", desc: "Gamified badges awarding permanent payout percentage boosts." },
+      { title: "Anti-Fraud Protection", desc: "Multi-layered proxy detection & device fingerprinting ensuring platform stability." },
+      { title: "Reward Forecast Calculator", desc: "Predictive tool estimating weekly earnings based on active effort." },
+      { title: "Task Difficulty Indicator", desc: "Clear Easy/Medium/Hard badges mapped to required user effort." }
+    ];
+
+    // Interview Q&A Cards (20 Q&A)
+    const qaList = [
+      { q: "What is a GPT platform?", a: "Get-Paid-To (GPT) platforms allow users to earn digital rewards or cash by completing online tasks such as surveys, app installs, rewarded gaming, or watching ads." },
+      { q: "How do offerwalls work?", a: "Offerwalls act as third-party ad brokers embedded into GPT apps. When a user completes an offer, the partner sends a server-to-server postback webhook to credit the platform." },
+      { q: "How does a GPT platform make money?", a: "Platforms earn via affiliate arbitrage. Advertisers pay the platform a gross CPA rate (e.g. $10), and the platform credits the user ~70% ($7), keeping 30% ($3) as gross margin." },
+      { q: "What is CPA / CPI / CPE / CPR?", a: "CPA = Cost Per Action, CPI = Cost Per Install, CPE = Cost Per Engagement (game milestone), CPR = Cost Per Registration." },
+      { q: "Why are postback webhooks critical?", a: "Postbacks are secure server-to-server HTTP notifications sent by offerwalls to inform the GPT platform of verified completion without relying on client-side state." },
+      { q: "What is a reward reversal / chargeback?", a: "When an advertiser detects fraudulent task completion or immediate app uninstallation, they claw back the payout. GPT platforms hold pending rewards to mitigate chargeback risk." },
+      { q: "Why is anti-fraud protection mandatory?", a: "VPNs, proxies, multi-accounters, and automated bots corrupt market research data, leading offerwalls to ban the GPT platform's API key." },
+      { q: "How can VEloop maximize user retention?", a: "Via daily check-in streak multipliers, low $0.50 cashout thresholds, level progression bonuses, and transparent postback tracking." },
+      { q: "How should VEloop handle pending rewards?", a: "Instant credit for low-risk microtasks (< $1.00), while holding high-payout gaming offers ($10+) in pending review for 24-72 hours." },
+      { q: "What makes a superior GPT user experience?", a: "Clean modern fintech UI, zero hidden fees, instant crypto/UPI processing, clear survey qualification pre-screening, and responsive support." },
+      { q: "What is demographic survey disqualification?", a: "When a user fails a survey pre-screener due to age, gender, or region mismatch. Pre-filtering profiles prevents wasted user time." },
+      { q: "Why support low $0.50 payout thresholds?", a: "Low cashout minimums build user trust immediately, proving the platform actually pays out without requiring weeks of effort." },
+      { q: "How does bandwidth sharing monetization function?", a: "Applications like EarnApp/Pawns lease unused residential IP bandwidth to corporate clients for public web scraping and market research." },
+      { q: "What is a referral tier structure?", a: "A commission model rewarding users a percentage (e.g. 10%) of earnings generated by invited friends, driving organic viral growth." },
+      { q: "How do postbacks prevent client-side tampering?", a: "Postback endpoints require secret API signatures (HMAC SHA256) verified server-side, making browser manipulation impossible." },
+      { q: "What is the role of gamification in GPT apps?", a: "Badges, XP, levels, and leaderboards convert mechanical task completion into an engaging game, boosting DAU and lifetime value." },
+      { q: "Why integrate multiple offerwall partners?", a: "Diversifying offerwalls (CPX, Torox, BitLabs) prevents single-provider downtime and maximizes global offer coverage." },
+      { q: "How does VEloop ensure payout liquidity?", a: "By maintaining a reserve fund and establishing automated API integrations with crypto gateways & UPI payment rails." },
+      { q: "What is the primary operational risk for GPT apps?", a: "Offerwall API key bans due to user fraud or high chargeback rates. Robust fraud detection protects key revenue streams." },
+      { q: "What is VEloop's core competitive advantage?", a: "Combining a modern fintech UI, low $0.50 cashouts, 10 offerwalls, smart task matching, and transparent postback tracking." }
+    ];
+
+    // Core Mode Switcher
+    function setAppMode(mode) {
+      appState.mode = mode;
+      const demoContainer = document.getElementById('mode-demo-container');
+      const researchContainer = document.getElementById('mode-research-container');
+      const btnDemo = document.getElementById('btn-mode-demo');
+      const btnResearch = document.getElementById('btn-mode-research');
+
+      if(mode === 'demo') {
+        demoContainer.classList.remove('hidden');
+        researchContainer.classList.add('hidden');
+        btnDemo.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-brand-700 shadow-xs flex items-center gap-1.5";
+        btnResearch.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-brand-700 transition-all flex items-center gap-1.5";
+      } else {
+        demoContainer.classList.add('hidden');
+        researchContainer.classList.remove('hidden');
+        btnResearch.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-brand-700 shadow-xs flex items-center gap-1.5";
+        btnDemo.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-brand-700 transition-all flex items-center gap-1.5";
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Demo Mode Navigation
+    function switchDemoTab(tabId) {
+      document.querySelectorAll('.demo-tab-view').forEach(v => v.classList.add('hidden'));
+      const target = document.getElementById('demo-tab-' + tabId);
+      if(target) target.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('nav-' + tabId);
+      if(activeBtn) activeBtn.classList.add('active');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Research Mode Navigation
+    function switchResTab(tabId) {
+      document.querySelectorAll('.res-tab-view').forEach(v => v.classList.add('hidden'));
+      const target = document.getElementById('res-' + tabId.replace('res-', ''));
+      if(target) target.classList.remove('hidden');
+
+      document.querySelectorAll('.res-nav-link').forEach(btn => btn.classList.remove('active'));
+      const activeNav = document.getElementById('resnav-' + tabId);
+      if(activeNav) activeNav.classList.add('active');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Dynamic Builders
+    function buildResearchContent() {
+      // 1. Build Platform Cards
+      const platContainer = document.getElementById('platforms-container-grid');
+      if(platContainer) {
+        platContainer.innerHTML = platformData.map(p => `
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 class="text-lg font-extrabold text-slate-900">${p.name}</h3>
+              <span class="text-xs font-mono font-bold text-brand-600 bg-brand-50 px-2.5 py-1 rounded-md border border-brand-100">${p.ref}</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">${p.desc}</p>
+            <div class="space-y-1.5 text-xs">
+              <div><strong class="text-slate-800">Earning Methods:</strong> <span class="text-slate-600">${p.earning}</span></div>
+              <div><strong class="text-slate-800">Key Features:</strong> <span class="text-slate-600">${p.features}</span></div>
+              <div><strong class="text-slate-800">Monetization:</strong> <span class="text-slate-600">${p.monetization}</span></div>
+              <div><strong class="text-slate-800">UX Audit:</strong> <span class="text-slate-600">${p.ux}</span></div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // 2. Build Earning Methods
+      const earnGrid = document.getElementById('earning-methods-grid');
+      if(earnGrid) {
+        earnGrid.innerHTML = earningMethodsData.map(e => `
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+            <h4 class="font-extrabold text-slate-900 text-base">${e.title}</h4>
+            <p class="text-xs text-slate-500">${e.desc}</p>
+            <div class="p-3 bg-slate-50 rounded-xl text-xs space-y-1 mt-2">
+              <div><strong class="text-slate-700">User Flow:</strong> ${e.flow}</div>
+              <div><strong class="text-slate-700">Revenue Model:</strong> ${e.rev}</div>
+              <div class="text-brand-700 font-bold"><strong class="text-brand-800">VEloop Idea:</strong> ${e.vloop}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // 3. Build Feature Matrix Table
+      const matrixBody = document.getElementById('matrix-table-body');
+      if(matrixBody) {
+        matrixBody.innerHTML = matrixRows.map(r => `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-bold text-slate-800">${r.feature}</td>
+            <td class="p-3">${renderStatusBadge(r.jt)}</td>
+            <td class="p-3">${renderStatusBadge(r.fc)}</td>
+            <td class="p-3">${renderStatusBadge(r.sb)}</td>
+            <td class="p-3">${renderStatusBadge(r.tb)}</td>
+            <td class="p-3">${renderStatusBadge(r.ea)}</td>
+            <td class="p-3">${renderStatusBadge(r.pa)}</td>
+            <td class="p-3">${renderStatusBadge(r.ie)}</td>
+            <td class="p-3">${renderStatusBadge(r.ct)}</td>
+          </tr>
+        `).join('');
+      }
+
+      // 4. Build Offerwall Networks Research Grid
+      const netGrid = document.getElementById('networks-research-grid');
+      if(netGrid) {
+        netGrid.innerHTML = offerwallNetworks.map(n => `
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+            <div class="flex items-center justify-between">
+              <h4 class="font-extrabold text-slate-900 text-base">${n.name}</h4>
+              <span class="text-[10px] font-extrabold text-brand-700 bg-brand-50 px-2 py-0.5 rounded">DEMO / RESEARCH</span>
+            </div>
+            <div class="text-xs font-bold text-brand-600">${n.type}</div>
+            <p class="text-xs text-slate-500">${n.desc}</p>
+            <div class="pt-2 text-xs font-bold text-slate-700">VEloop Rec: <span class="text-slate-900">${n.rec}</span></div>
+          </div>
+        `).join('');
+      }
+
+      // 5. Build Unique Ideas
+      const ideasGrid = document.getElementById('ideas-research-grid');
+      if(ideasGrid) {
+        ideasGrid.innerHTML = uniqueIdeas.map(i => `
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+            <h4 class="font-extrabold text-slate-900 text-base text-brand-700">${i.title}</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">${i.desc}</p>
+          </div>
+        `).join('');
+      }
+
+      // 6. Build Q&A Cards
+      const qaGrid = document.getElementById('qa-cards-grid');
+      if(qaGrid) {
+        qaGrid.innerHTML = qaList.map((item, idx) => `
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+            <div class="text-xs font-bold text-brand-600 uppercase">Q${idx + 1}: ${item.q}</div>
+            <p class="text-xs text-slate-700 font-medium leading-relaxed">${item.a}</p>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderStatusBadge(val) {
+      if(val === 'Yes') return `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-check"></i> Yes</span>`;
+      if(val === 'Partial') return `<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-minus"></i> Partial</span>`;
+      return `<span class="bg-slate-100 text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-full">No</span>`;
+    }
+
+    function renderDemoOfferwalls() {
+      const grid = document.getElementById('demo-offerwalls-grid');
+      if(grid) {
+        grid.innerHTML = offerwallNetworks.slice(0, 9).map(o => `
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <span class="font-extrabold text-slate-900">${o.name}</span>
+                <span class="text-[9px] font-bold text-brand-700 bg-brand-50 px-1.5 py-0.5 rounded">DEMO INTEGRATION</span>
+              </div>
+              <div class="text-xs text-slate-500 mb-3">${o.type}</div>
+            </div>
+            <button onclick="startDemoTask('${o.name} Wall', 500)" class="w-full bg-brand-600 text-white font-bold py-2 rounded-xl text-xs">Launch ${o.name}</button>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderDemoLeaderboard() {
+      const body = document.getElementById('demo-leaderboard-body');
+      if(body) {
+        body.innerHTML = [
+          { rank: 1, name: "Vikram R.", level: 12, vlp: "48,500", prize: "$35.00 USD" },
+          { rank: 2, name: "Sarah Jenkins", level: 10, vlp: "39,200", prize: "$20.00 USD" },
+          { rank: 3, name: "Karan Patel", level: 9, vlp: "31,400", prize: "$15.00 USD" },
+          { rank: 14, name: "Ayush (You)", level: 5, vlp: "14,200", prize: "Rank #14" }
+        ].map(r => `
+          <tr class="${r.rank === 14 ? 'bg-brand-50 font-bold text-brand-900' : ''}">
+            <td class="p-3">#${r.rank}</td>
+            <td class="p-3 font-bold">${r.name}</td>
+            <td class="p-3">Level ${r.level}</td>
+            <td class="p-3 text-brand-600 font-bold">${r.vlp} VLP</td>
+            <td class="p-3 text-emerald-600 font-bold">${r.prize}</td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    function renderDemoAchievements() {
+      const grid = document.getElementById('demo-achievements-grid');
+      if(grid) {
+        grid.innerHTML = [
+          { title: "First Cashout", desc: "Complete 1 cashout", vlp: 100, done: true },
+          { title: "Survey Master", desc: "Complete 5 surveys", vlp: 250, done: true },
+          { title: "7-Day Streak", desc: "Log in 7 days in a row", vlp: 500, done: false }
+        ].map(a => `
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 space-y-2 flex flex-col justify-between">
+            <div>
+              <h4 class="font-extrabold text-slate-900 text-sm">${a.title}</h4>
+              <p class="text-xs text-slate-500">${a.desc}</p>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+              <span class="text-xs font-bold text-brand-600">+${a.vlp} VLP</span>
+              <button ${a.done ? 'disabled' : ''} onclick="claimAchievement('${a.title}', ${a.vlp})" class="${a.done ? 'bg-slate-100 text-slate-400' : 'bg-brand-600 text-white'} text-xs font-bold px-3 py-1 rounded-lg">
+                ${a.done ? 'Claimed' : 'Claim'}
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Balance & Toast Helpers
+    function updateBalances() {
+      const vlp = appState.vlpBalance;
+      const usd = (vlp / 1000).toFixed(2);
+      document.getElementById('top-vlp-val').innerText = vlp.toLocaleString();
+      document.getElementById('dash-vlp-balance').innerHTML = `${vlp.toLocaleString()} <span class="text-sm font-bold text-brand-600">VLP</span>`;
+      document.getElementById('dash-usd-balance').innerText = usd;
+      document.getElementById('demo-wallet-vlp').innerText = vlp.toLocaleString();
+      document.getElementById('demo-wallet-usd').innerText = usd;
+      document.getElementById('modal-available-vlp').innerText = vlp.toLocaleString();
+      document.getElementById('modal-available-usd').innerText = usd;
+    }
+
+    function showToast(title, msg) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = "pointer-events-auto bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-800 text-xs flex items-center gap-3";
+      toast.innerHTML = `<div class="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center font-bold text-white"><i class="fa-solid fa-check"></i></div><div><div class="font-bold">${title}</div><div class="text-slate-300 text-[11px]">${msg}</div></div>`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function claimDailyCheckin() {
+      if(appState.claimedStreakToday) {
+        showToast('Already Claimed', 'Streak check-in already claimed today!');
+        return;
+      }
+      appState.vlpBalance += 100;
+      appState.claimedStreakToday = true;
+      updateBalances();
+      document.getElementById('streak-sat').className = "w-5 h-5 rounded-full bg-emerald-500 text-white font-bold text-[9px] flex items-center justify-center";
+      document.getElementById('btn-daily-checkin').innerText = "Daily Check-in Claimed!";
+      showToast('Daily Check-in Claimed!', '+100 VLP credited to balance.');
+    }
+
+    function startDemoTask(title, vlp) {
+      appState.activeDemoTask = { title, vlp };
+      document.getElementById('modal-task-title').innerText = title;
+      document.getElementById('modal-task-vlp').innerText = `+${vlp} VLP`;
+      document.getElementById('task-modal').classList.remove('hidden');
+    }
+
+    function completeDemoTask() {
+      const { title, vlp } = appState.activeDemoTask;
+      appState.vlpBalance += vlp;
+      updateBalances();
+      closeModal('task-modal');
+      showToast('Task Completed!', `+${vlp} VLP credited for ${title}.`);
+    }
+
+    function copyReferralLink() {
+      const input = document.getElementById('demo-ref-input');
+      input.select();
+      navigator.clipboard.writeText(input.value);
+      showToast('Link Copied!', 'Referral link copied to clipboard.');
+    }
+
+    function openWithdrawModal() {
+      document.getElementById('withdraw-modal').classList.remove('hidden');
+    }
+
+    function submitWithdrawal() {
+      const method = document.getElementById('withdraw-method-select').value;
+      const dest = document.getElementById('withdraw-destination-input').value;
+      if(!dest) {
+        showToast('Input Required', 'Please enter destination address/email.');
+        return;
+      }
+      closeModal('withdraw-modal');
+      showToast('Withdrawal Submitted!', `Instant cashout via ${method} to ${dest} processing.`);
+    }
+
+    function claimAchievement(title, vlp) {
+      appState.vlpBalance += vlp;
+      updateBalances();
+      showToast('Badge Claimed!', `+${vlp} VLP added for ${title}.`);
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+      buildResearchContent();
+      renderDemoOfferwalls();
+      renderDemoLeaderboard();
+      renderDemoAchievements();
+      updateBalances();
+    });
+  </script>
+</body>
+</html>
